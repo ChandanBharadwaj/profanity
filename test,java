@@ -1,0 +1,65 @@
+public class QueryBuilder {
+    private final StringBuilder query;
+
+    public QueryBuilder() {
+        this.query = new StringBuilder();
+    }
+
+    public QueryBuilder startsWith(String field, String value) {
+        appendCondition("startsWith(" + field + ", '" + value + "')");
+        return this;
+    }
+
+    public QueryBuilder endsWith(String field, String value) {
+        appendCondition("endsWith(" + field + ", '" + value + "')");
+        return this;
+    }
+
+    public QueryBuilder equals(String field, String value) {
+        appendCondition("equals(" + field + ", '" + value + "')");
+        return this;
+    }
+
+    public QueryBuilder fileSize(String operator, long value) {
+        appendCondition("fileSize " + operator + " " + value);
+        return this;
+    }
+
+    public QueryBuilder and() {
+        query.append(" AND ");
+        return this;
+    }
+
+    public QueryBuilder or() {
+        query.append(" OR ");
+        return this;
+    }
+
+    public String build() {
+        return query.toString().trim();
+    }
+
+    private void appendCondition(String condition) {
+        if (query.length() > 0 && 
+            !query.toString().endsWith(" AND ") && 
+            !query.toString().endsWith(" OR ")) {
+            query.append(" AND "); // Default logical operator if not explicitly added
+        }
+        query.append(condition);
+    }
+
+    public static void main(String[] args) {
+        // Example Usage
+        String query = new QueryBuilder()
+                .startsWith("name", "John")
+                .and()
+                .endsWith("email", "@example.com")
+                .or()
+                .equals("status", "active")
+                .and()
+                .fileSize(">", 1000)
+                .build();
+
+        System.out.println("Generated Query: " + query);
+    }
+}
